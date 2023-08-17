@@ -43,6 +43,10 @@ Run first project:
 ```
 `App Folder`> ng serve
 ```
+
+// TODO: Check this part
+
+If you have any problem with packages you can remove all packages and run this command:
 Install requirement packages:
 ```
 `App Folder`> npm install
