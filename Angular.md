@@ -1,4 +1,9 @@
 # Angular
+
+![](https://img.shields.io/github/stars/pandao/editor.md.svg) ![](https://img.shields.io/github/forks/pandao/editor.md.svg)
+
+[TOC]
+
 ## What is angular?
 Angular is a development platform built on TypeScript, encompassing the following key elements:
 - **Component-Based Framework:** Angular offers a framework for constructing scalable web applications through components. A component consists of a TypeScript class with a decorator, an HTML template, and styles. Components provide encapsulation and a clear application structure.
@@ -30,7 +35,7 @@ Angular is a development platform built on TypeScript, encompassing the followin
 
 Install angular/cli on administrator command prompt
 ```
->npm install -g @angular/cli
+> npm install -g @angular/cli
 ```
 Create first project:
 ```
@@ -124,14 +129,14 @@ There are 3 types of selectors:
 
 Data binding automatically keeps your page up-to-date based on your application's state. You use data binding to specify things such as the source of an image, the state of a button, or data for a particular user.
 
-### TS File -> HTML File
+### HTML File &larr; TS File
 
 | Type | Fromat |
 |------------|------------|
 | String Interpolation | `app-user` |
 | Property Binding | `[Property Name]="Variable"` |
 
-### HTML File -> TS File
+### HTML File &rarr; TS File
 
 | Type | Fromat |
 |------------|------------|
@@ -156,7 +161,7 @@ export class UserComponent{
 <input type="text" (input)="onInputChanged($event)"><button>
 ```
 
-### HTML File <-> TS File
+### HTML File &harr; TS File
 | Type | Fromat |
 |------------|------------|
 | Two-Way binding | `[(target)]="expression"` |
@@ -219,12 +224,12 @@ export class UserComponent{
 
 ## Directives
 
+Change the appearance or behavior of DOM elements and Angular components with attribute directives.
+
 |  |   |   |
 |------------|------------|------------|
 |Creator:| Predefined | Custom |
 |Usage:| Attribute | Structural |
-
-: 
 
 ### Predefined attribute directives
 Change the attribute of elements to as same as the attribute binding
