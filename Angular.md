@@ -135,7 +135,7 @@ Data binding automatically keeps your page up-to-date based on your application'
 
 | Type | Fromat |
 |------------|------------|
-| String Interpolation | `app-user` |
+| String Interpolation | `{{variable}}` |
 | Property Binding | `[Property Name]="Variable"` |
 
 ### HTML File &rarr; TS File
