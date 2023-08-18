@@ -65,6 +65,23 @@ Install requirement packages:
 	+ projects/`app name`/ architect/build/styles
 	+ projects/`app name`/ architect/build/scripts
 
+## Install Bootstrap & JQuery
+
+Bootstrap & JQuery are two libraries to help make better pages
+
+```
+npm install bootstrap[@version]
+npm install jquery
+```
+If you have any problem with packages you can delete node_modules folder from the source folder and run this command to install all packages again:
+```
+npm install
+```
+Add these lines in angular.json
+- "node_module/bootstrap/dist/css/bootstrap.min.css" subcaste "styles" before "src/styles.css" because priority of style.css is higher than bootstrap.min.css.
+- "node_module/jquery/jquery.min.js" subcaste "scripts"
+- "node_module/bootstrap/dist/js/bootstrap.min.js" subcaste "scripts" after "jquery.min.js
+
 ## Components
 
 A component controls a patch of the screen called a view. It consists of a TypeScript class, an HTML template, and a CSS style sheet. The TypeScript class defines the interaction of the HTML template and the rendered DOM structure, while the style sheet describes its appearance.
@@ -178,19 +195,6 @@ import { FormsModule } from '@angular/forms;
 <! -- component.html -->
 <input type="text" [(ngModule)]="name"><button>
 ```
-
-## Install Bootstrap & JQuery
-
-```
-npm install bootstrap[@version]
-npm install jquery
-```
-If you have any problem with packages you can delete node_modules folder from source folder and run this command to installs all packages again:
-npm install
-Add this lines in angular.json
-- "node_module/bootstrap/dist/css/bootstrap.min.css" subcaste "styles" before "src/styles.css" because priority of style.css is higher than bootstrap.min.css.
-- "node_module/jquery/jquery.min.js" subcaste "scripts"
-- "node_module/bootstrap/dist/js/bootstrap.min.js" subcaste "scripts" after "jquery.min.js
 
 ## Attribute Binding
 
