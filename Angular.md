@@ -301,12 +301,55 @@ Public trackByFunc(index:number, el:any)
 </div>
 ```
 
+**Note**: Angular convert these decorators to [ ] like: *ngIf => [ngIf]
+## Parnet and Child components
+### Sending data to a child component
 
+[![Sending data to a child component](https://angular.io/generated/images/guide/inputs-outputs/input.svg "Sending data to a child component")](https://angular.io/guide/inputs-outputs "Sending data to a child component")
 
+#### Child:
+```javascript
+// childComponent.ts
+import { Component, Input } from '@angular/core'; // First, import Input
+export class ItemDetailComponent {
+  @Input() item = ''; // decorate the property with @Input()
+}
+```
+```html
+<! --  childComponent.html -->
+<p>
+  Today's item: {{item}}
+</p>
+```
+#### Parent:
 
+[![Sending data to a child component](https://angular.io/generated/images/guide/inputs-outputs/input-diagram-target-source.svg "Sending data to a child component")](https://angular.io/guide/inputs-outputs "Sending data to a child component")
 
+```javascript
+// parentComponent.ts
+export class AppComponent {
+  currentItem = 'Television';
+}
+```
+```html
+<! --  parentComponent.html -->
+<app-item-detail [item]="currentItem"></app-item-detail>
+```
 
+### Sending data to a parent component
 
+[![Sending data to a parent component](https://angular.io/generated/images/guide/inputs-outputs/output.svg "Sending data to a parent component")](https://angular.io/guide/inputs-outputs "Angular Architecture")
 
-
-
+```javascript
+// component.ts
+import { Component, Input } from '@angular/core'; // First, import Input
+export class ItemDetailComponent {
+  @Input() item = ''; // decorate the property with @Input()
+}
+```
+```html
+<! --  component.html -->
+<p>
+  Today's item: {{item}}
+</p>
+```
