@@ -303,6 +303,13 @@ Public trackByFunc(index:number, el:any)
 
 **Note**: Angular convert these decorators to [ ] like: *ngIf => [ngIf]
 ## Parent and Child components
+A common pattern in Angular is sharing data between a parent component and one or more child components. Implement this pattern with the `@Input()` and `@Output()` decorators.
+Consider the following hierarchy:
+```html
+<parent-component>
+  <child-component></child-component>
+</parent-component>
+```
 ### Sending data to a child component
 #### Child:
 ```html
