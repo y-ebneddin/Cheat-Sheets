@@ -302,12 +302,15 @@ Public trackByFunc(index:number, el:any)
 ```
 
 **Note**: Angular convert these decorators to [ ] like: *ngIf => [ngIf]
-## Parnet and Child components
+## Parent and Child components
 ### Sending data to a child component
-
-[![Sending data to a child component](https://angular.io/generated/images/guide/inputs-outputs/input.svg "Sending data to a child component")](https://angular.io/guide/inputs-outputs "Sending data to a child component")
-
 #### Child:
+```html
+<! --  childComponent.html -->
+<p>
+  Today's item: {{item}}
+</p>
+```
 ```javascript
 // childComponent.ts
 import { Component, Input } from '@angular/core'; // First, import Input
@@ -315,41 +318,91 @@ export class ItemDetailComponent {
   @Input() item = ''; // decorate the property with @Input()
 }
 ```
-```html
-<! --  childComponent.html -->
-<p>
-  Today's item: {{item}}
-</p>
-```
 #### Parent:
-
-[![Sending data to a child component](https://angular.io/generated/images/guide/inputs-outputs/input-diagram-target-source.svg "Sending data to a child component")](https://angular.io/guide/inputs-outputs "Sending data to a child component")
-
+```html
+<! --  parentComponent.html -->
+<app-item-detail [item]="currentItem"></app-item-detail>
+```
 ```javascript
 // parentComponent.ts
 export class AppComponent {
   currentItem = 'Television';
 }
 ```
-```html
-<! --  parentComponent.html -->
-<app-item-detail [item]="currentItem"></app-item-detail>
-```
+
+[![Sending data to a child component](https://angular.io/generated/images/guide/inputs-outputs/input-diagram-target-source.svg "Sending data to a child component")](https://angular.io/guide/inputs-outputs "Sending data to a child component")
 
 ### Sending data to a parent component
-
-[![Sending data to a parent component](https://angular.io/generated/images/guide/inputs-outputs/output.svg "Sending data to a parent component")](https://angular.io/guide/inputs-outputs "Angular Architecture")
-
+#### Child
+```html
+<! --  childComponent.html -->
+<label for="item-input">Add an item:</label>
+<input type="text" id="item-input" #newItem>
+<button type="button" (click)="addNewItem(newItem.value)">Add to parent's list</button>
+```
 ```javascript
-// component.ts
-import { Component, Input } from '@angular/core'; // First, import Input
-export class ItemDetailComponent {
-  @Input() item = ''; // decorate the property with @Input()
+// childComponent.ts
+export class ItemOutputComponent {
+  @Output() newItemEvent = new EventEmitter<string>();
+  addNewItem(value: string) {
+    this.newItemEvent.emit(value);
+  }
 }
 ```
+#### Parent
 ```html
-<! --  component.html -->
-<p>
-  Today's item: {{item}}
-</p>
+<! --  parentComponent.html -->
+<app-item-output (newItemEvent)="addItem($event)"></app-item-output>
+```
+```javascript
+// childComponent.ts
+export class AppComponent {
+  items = ['item1', 'item2', 'item3', 'item4'];
+  addItem(newItem: string) {
+    this.items.push(newItem);
+  }
+}
+```
+### Two-way binding
+#### Parent
+```html
+<! --  parentComponent.html -->
+<app-sizer [(size)]="fontSizePx"></app-sizer>
+<div [style.font-size.px]="fontSizePx">Resizable Text</div>
+```
+```javascript
+// parentComponent.ts
+fontSizePx = 16;
+```
+#### Child
+```html
+<! --  childComponent.html -->
+<div>
+  <button type="button" (click)="dec()" title="smaller">-</button>
+  <button type="button" (click)="inc()" title="bigger">+</button>
+  <span [style.font-size.px]="size">FontSize: {{size}}px</span>
+</div>
+```
+```javascript
+// childComponent.ts
+export class SizerComponent {
+  @Input() size!: number | string;
+  @Output() sizeChange = new EventEmitter<number>();
+
+  dec() {
+    this.resize(-1);
+  }
+  inc() {
+    this.resize(+1);
+  }
+
+  resize(delta: number) {
+    this.size = Math.min(40, Math.max(8, +this.size + delta));
+    this.sizeChange.emit(this.size);
+  }
+}
+```
+The two-way binding syntax is shorthand for a combination of property binding and event binding.
+```html
+<app-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></app-sizer>
 ```
