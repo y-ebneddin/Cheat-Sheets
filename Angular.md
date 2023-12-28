@@ -413,3 +413,92 @@ The two-way binding syntax is shorthand for a combination of property binding an
 ```html
 <app-sizer [size]="fontSizePx" (sizeChange)="fontSizePx=$event"></app-sizer>
 ```
+## Reference
+### Template variables
+Template variables help you use data from one part of a template in another part of the template.
+A template variable can refer to the following:
+- DOM element within a template
+- directive or component
+- TemplateRef from an ng-template
+- web component
+
+###  Local Reference (Template variables)
+```html
+<! --  component.html -->
+<! --  Use # to decleare a local reference -->
+<input #phone placeholder="phone number" />
+<!-- lots of other elements -->
+<!-- phone refers to the input element; pass its `value` to an event handler -->
+<button type="button" (click)="callPhone(phone.value)">Call</button>
+```
+Just like variables in JavaScript or TypeScript code, template variables are scoped to the template that declares them.
+### ViewChild (Decorator)
+A decorator to access to DOM elements in a component.
+```javascript
+@ViewChild(selector, {[static:true] [,read:Token]}) name: typeOfToken
+```
+
+```html
+<! --  component.html -->
+<! --  Use # to decleare a local reference -->
+<input #phone placeholder="phone number" />
+```
+```javascript
+<! --  component.ts -->
+<! --  Use # to decleare a local reference -->
+<input #phone placeholder="phone number" />
+```
+**Note:** By default (status:false), create view child reference after initialize component and you don't have access to view child in initilizing component event. 
+You can use static property to define a view child globally but note that it will make your pages heavy.
+**Note:** Use ElementRef API as the last resort when direct access to DOM is needed. Use templating and data-binding provided by Angular instead. Alternatively you can take a look at Renderer2 which provides an API that can be safely used.
+
+```html
+<! --  component.html -->
+<p #localRef>Test</p>
+```
+```javascript
+<! --  component.ts -->
+@ViewChild('localRef') localRef: ElementRef;
+constructor(private rendered:Renderer2) {}
+public ngAfterViewInit(){
+	<! --Dangerous -->
+	this.localRef.nativeElement.style.color = 'Red';
+	<! -- Instead of the above line: -->
+	this.renderer.setStyle(this.localRef.nativeElement, 'color', 'Red');
+}
+```
+#### Access to another component:
+```javascript
+@ViewChild(ComponentType, {read: ComponentType}) name: ComponentType;
+```
+#### Access to list of another component:
+```javascript
+@ViewChildren(ComponentType, {read: ComponentType}) name: QueryList<ComponentType>;
+```
+### ViewEncapsulation
+
+| Member | Description |
+|------------|------------|
+| Emulated |Emulates a native Shadow DOM encapsulation behavior by adding a specific attribute to the component's host element and applying the same attribute to all the CSS selectors provided via Component#styles or Component#styleUrls. (This is the default option.)|
+| None |Doesn't provide any sort of CSS style encapsulation, meaning that all the styles provided via Component#styles or Component#styleUrls are applicable to any HTML element of the application regardless of their host Component. |
+| ShadowDom |Uses the browser's native Shadow DOM API to encapsulate CSS styles, meaning that it creates a ShadowRoot for the component's host element which is then used to encapsulate all the Component's styling. |
+```javascript
+@Component({
+  selector: 'app-root',
+  template: `
+    <h1>Hello World!</h1>
+    <span class="red">Shadow DOM Rocks!</span>
+  `,
+  styles: [`
+    :host {
+      display: block;
+      border: 1px solid black;
+    }
+    h1 { color: blue; }
+    .red { background-color: red; }
+  `],
+ encapsulation: ViewEncapsulation.ShadowDom
+})
+class MyApp {
+}
+```
