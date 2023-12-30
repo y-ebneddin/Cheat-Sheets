@@ -502,3 +502,49 @@ public ngAfterViewInit(){
 class MyApp {
 }
 ```
+## Content of parent in child 
+ngContent is a decorator to read content of a parent HTML file in a child component .
+```html
+<! -- parentComponent.html -->
+<app-child>
+	<p> Parent content between child tags</p>
+</app-child>
+```
+```html
+<! -- childComponent.html -->
+<p>Parent: <ng-content></ng-content></p>
+```
+```html
+HTML result:
+Parent: Parent content between child tags
+```
+You have an opportunity to decide on the child component's behaviour from the parent component. Select attribute can accept CSS selectors like class and id.
+```html
+<! -- childComponent.html -->
+<div>
+	<ng-content select=".success">Success</ng-content>
+</div>
+<div>
+	<ng-content select=".error">Error</ng-content>
+</div>
+<div>
+	<ng-content select=".warning">Wrning</ng-content>
+</div>
+```
+### Use local (content) variable in child typescript
+```html
+<! -- parentComponent.html -->
+<app-child>
+	<p #par> Parent content between child tags</p>
+</app-child>
+```
+```javascript
+<! --  childComponent.ts -->
+@ContentChild('par') par: ElementRef;
+public ngAfterContentInit(){
+	<! --  Execute code after initializing content -->
+}
+public ngAfterContentInit(){
+	<! --  Run code after content is changed -->
+}
+```
