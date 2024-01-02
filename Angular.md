@@ -548,3 +548,40 @@ public ngAfterContentInit(){
 	<! --  Run code after content is changed -->
 }
 ```
+## Lifecycle Hooks
+
+- Constructor: Call when is created a component.
+- ngOnCHange: Execute when change properties from @Input
+- ngOnInit: Execution on the first run of a componen
+- ngDoCheck: Execution when changing a component
+- ngAfterContentInit:  Execution when create a content of chilld component
+- ngAfterContentChanged: Execution when changing a content of chilld component
+- ngAfterViewInit:  Execution when create a viewChild
+- ngAfterViewChecked:  Execution when changing a viewChild
+- ngOnDestroy: Execute before destroy a component
+
+## Directives
+
+### Input
+```javascript
+private _user:IUser;
+@Input()
+set user(user: IUser) {
+	this._user = user;
+}
+get user(): IUser{
+	return: this._user;
+}
+```
+### Container
+The `<ng-container>` allows us to use structural directives without any extra element, making sure that the only DOM changes being applied are those dictated by the directives themselves.
+```html
+<! -- parentComponent.html -->
+<select>
+	<ng-container *ngFor="let user of users">
+		<ng-container *ngIf="user.age >= 30">
+			<option [ngValue]="user">{{ user.name }}</option>
+		</ng-container>
+	</ng-container>
+</select>
+```
