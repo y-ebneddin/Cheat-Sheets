@@ -585,3 +585,39 @@ The `<ng-container>` allows us to use structural directives without any extra el
 	</ng-container>
 </select>
 ```
+### Custom Directive
+You can define your own directives to attach custom behavior to elements in the DOM.
+#### Attribute Directive
+```javascript
+import { Directive, HostBinding, HostListener } from '@angular/core';
+@Directive({
+	<! --  Selector of directive -->
+	selector: '[appColorful]'
+})
+export class ColorfulDirective {
+	  availableColors = ['#BD0000', '#F64343', '#EC0B0B', '#9A0000', '#6F0000', '#BD7B00'];
+	<! --  binding attribute property of a DOM element to a variable -->
+	  @HostBinding('style.color') color: string;
+	  @HostBinding('style.border-color') borderColor: string;
+	  <! --  Listen to DOM element event  -->
+	  @HostListener('keydown') newColor() {
+		const randomColorIndex = Math.floor(Math.random() * this.availableColors.length);
+		this.color = this.borderColor = this.availableColors[randomColorIndex];
+	  }
+}
+```
+```html
+<! -- Use from directive -->
+<input type="text" appColorFul>
+```
+#### Structural Directive
+
+#### Selectors
+
+Declare as one of the following:
+- element-name: Select by element name.
+- .class: Select by class name.
+- [attribute]: Select by attribute name.
+- [attribute=value]: Select by attribute name and value.
+- :not(sub_selector): Select only if the element does not match the sub_selector.
+- selector1, selector2: Select if either selector1 or selector2 matches.
