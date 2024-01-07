@@ -539,13 +539,13 @@ You have an opportunity to decide on the child component's behaviour from the pa
 </app-child>
 ```
 ```javascript
-<! --  childComponent.ts -->
+// childComponent.ts
 @ContentChild('par') par: ElementRef;
 public ngAfterContentInit(){
-	<! --  Execute code after initializing content -->
+	// Execute code after initializing content
 }
 public ngAfterContentInit(){
-	<! --  Run code after content is changed -->
+	// Run code after content is changed
 }
 ```
 ## Lifecycle Hooks
@@ -591,26 +591,139 @@ You can define your own directives to attach custom behavior to elements in the 
 ```javascript
 import { Directive, HostBinding, HostListener } from '@angular/core';
 @Directive({
-	<! --  Selector of directive -->
+	// Selector of directive
 	selector: '[appColorful]'
 })
 export class ColorfulDirective {
-	  availableColors = ['#BD0000', '#F64343', '#EC0B0B', '#9A0000', '#6F0000', '#BD7B00'];
-	<! --  binding attribute property of a DOM element to a variable -->
-	  @HostBinding('style.color') color: string;
-	  @HostBinding('style.border-color') borderColor: string;
-	  <! --  Listen to DOM element event  -->
-	  @HostListener('keydown') newColor() {
+	availableColors = ['#BD0000', '#F64343', '#EC0B0B', '#9A0000', '#6F0000', '#BD7B00'];
+	// binding attribute property of a DOM element to a variable
+	@HostBinding('style.color') color: string;
+	@HostBinding('style.border-color') borderColor: string;
+	// Listen to DOM element event
+	@HostListener('keydown') newColor() {
 		const randomColorIndex = Math.floor(Math.random() * this.availableColors.length);
 		this.color = this.borderColor = this.availableColors[randomColorIndex];
-	  }
+	}
 }
 ```
 ```html
 <! -- Use from directive -->
 <input type="text" appColorFul>
 ```
+**Note:** You can use an input property for your directive as default:
+```javascript
+@Input('DirectiveSelectorName') propertyName : type;
+// In the following the above code as an example: 
+@Input('appColorful') defaultColor : string;
+```
+```html
+<! -- Use from directive -->
+<input type="text" [appColorFul]='Red'>
+```
+This code interpret to:
+```html
+<! -- Use from directive -->
+<input type="text" appColorFul [defaultColor]='Red'>
+```
 #### Structural Directive
+We need this consepts
+- TemplateRef: Represents an embedded template that can be used to instantiate embedded views. To instantiate embedded views based on a template, use the `ViewContainerRef` method `createEmbeddedView()`.
+Access a TemplateRef instance by placing a directive on an <ng-template> element (or directive prefixed with *). The TemplateRef for the embedded view is injected into the constructor of the directive, using the TemplateRef token.
+- ViewContainerRef: Represents a container where one or more views can be attached to a component.
+
+Context:
+```javascript
+export interface ICarouselContext {
+    $implicit: string,
+    controller: {
+        next: () => void,
+        prev: () => void
+    }
+}
+```
+Directive:
+```javascript
+import { Directive, Input, TemplateRef, OnInit, ViewContainerRef } from '@angular/core';
+import { ICarouselContext } from './interfaces/app-interface';
+
+@Directive({
+  selector: '[appCarousel]'
+})
+export class CarouselDirective implements OnInit {
+
+  context: ICarouselContext | null = null;
+  index: number = 0;
+
+  constructor(private templateRef: TemplateRef<ICarouselContext>,
+              private viewContainerRef: ViewContainerRef) { }
+
+	// Angular standard to define a variable name (We use the 'from' variabel name in HTML)
+  @Input('appCarouselFrom') images: string[];
+
+  timer;
+
+	// We use 'autoPlay" in the HTML file
+  @Input('appCarouselAutoplay')
+  set autoplay(val: string) {
+    val === 'No' ? this.clearAutoPlay() : this.playAutoPlay()
+  }
+
+  public ngOnInit() {
+    this.context = {
+      $implicit: this.images[0],
+      controller: {
+        next: () => this.next(),
+        prev: () => this.prev()
+      }
+    }
+
+	// Bind templateRef and directive
+    this.viewContainerRef.createEmbeddedView(this.templateRef, this.context);
+  }
+
+  public next() {
+    this.index++;
+    if (this.index >= this.images.length) {
+      this.index = 0;
+    }
+    this.context.$implicit = this.images[this.index];
+  }
+
+  public prev() {
+    this.index--;
+    if (this.index < 0) {
+      this.index = this.images.length - 1;
+    }
+    this.context.$implicit = this.images[this.index];
+  }
+
+  public playAutoPlay() {
+    this.timer = setInterval(() => {
+      this.next();
+    }, 1000);
+  }
+
+  public clearAutoPlay() {
+    clearInterval(this.timer);
+  }
+}
+```
+
+```html
+<div *appCarousel="let image from images autoplay 'Yes'; let ctrl = controller">
+  <img [src]="image">
+  <button (click)="ctrl.next()">Next</button>
+  <button (click)="ctrl.prev()">Previous</button>
+</div>
+
+<!--  Angular interpret to:  -->
+<!-- <ng-template [appCarousel]>
+  <div>
+  </div>
+</ng-template> -->
+```
+
+[Structural Directive Youtube Learning](https://youtu.be/qMyVUqr2AjE?t=31m57s "Structural Directive Youtube Learning")
 
 #### Selectors
 
