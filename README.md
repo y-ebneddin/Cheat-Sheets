@@ -1,2 +1,2 @@
 # List of Cheat sheets:
-- <img src="https://angular.io/assets/images/logos/angular/angular.svg" alt="angular" width="40" height="40"/> [Angular](Angular "Angular") - In process
+- <img src="https://angular.io/assets/images/logos/angular/angular.svg" alt="angular" width="20" height="20"/> [Angular](Angular "Angular") - In process
