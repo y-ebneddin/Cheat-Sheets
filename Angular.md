@@ -855,3 +855,69 @@ class HeroListComponent {
 	  constructor(@Self() private service: HeroService) {}
 }
 ```
+
+# Routing
+Create the routing module:
+```shell
+ng new routingDynamics
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: '', component: HomeComponent },					// Default page
+  { path: 'users', component: UsersComponent },			// Page
+  { path: 'users/:id', component: UsersComponent },		// Page with query parameters like '.../users/john'
+  { path: 'customers/:id', component: CustomersComponent, children:[
+  		 { path: 'edit', component: EditCustomerComponent}		// Page with sub page. Path: '.../customer/john/edit'
+  ] },
+  { path: 'notFound', component: NotFoundComponent },		// Not found page
+  { path: '**', redirectTo: 'notFound' }		// Every route is defined except for routes
+];
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes)
+  ]
+})
+export class AppModule { }
+```
+```html
+<!-- root component like app.component.html -->
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/users']" routerLinkActive="active">Users</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/admins']" routerLinkActive="active">Admins</a>
+  </li>
+</ul>
+
+<router-outlet></router-outlet>
+<!-- router-outlet: Acts as a placeholder that Angular dynamically fills based on the current router state. -->
+```
+Redirect from code:
+```javascript
+@Component({ … })
+class HomeComponent {
+	  constructor(private router:Router) {
+	  		this.router.navigate(['/users']);
+	  }
+}
+```
+```html
+<a [routerLink]=['/users']>Users</a>
+<a [routerLink]=['/users','0']>Select user 0</a>	<!-- Route the page with query string (param:0) -->
+<a [routerLink]=['/users','0'] [queryParams]={edit:'1'} [fragment]="'title'">Select user 0</a>	<!-- Route to ...'users/0?edit=1#title -->
+```
+Read query parameters from routing:
+```javascript
+@Component({ … })
+class HomeComponent {
+	  constructor(private route:ActivatedRoute) {
+	  		this.route.snapshot.params['id'];
+	  }
+}
+```
+** Note: ** We have to define `<router-outlet></router-outlet>` in parent child pages like edit customer page in above example. Also we can get query parameters from parent: `this.route.parent.snapshot.params['id'];`
