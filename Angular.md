@@ -871,7 +871,8 @@ const routes: Routes = [
   		 { path: 'edit', component: EditCustomerComponent}		// Page with sub page. Path: '.../customer/john/edit'
   ] },
   { path: 'notFound', component: NotFoundComponent },		// Not found page
-  { path: '**', redirectTo: 'notFound' }		// Every route is defined except for routes
+  { path: 'notFound', component: NotFoundComponent },		// Not found page
+  { path: '**', redirectTo: 'notFound' }		// Every route is defined except for routes (In the end line)
 ];
 @NgModule({
   imports: [
@@ -921,3 +922,67 @@ class HomeComponent {
 }
 ```
 ** Note: ** We have to define `<router-outlet></router-outlet>` in parent child pages like edit customer page in above example. Also we can get query parameters from parent: `this.route.parent.snapshot.params['id'];`
+
+# Authentication
+
+Create the authentication service and guard:
+```shell
+ng g s auth
+
+ng g g auth
+```
+```javascript
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return this.authService.isAuthenticated()
+      .then((authenticated: boolean) => {
+        if (authenticated) {
+          return true;
+        } else {
+          this.router.navigate(['/notAuthorized']);
+          // return false;
+        }
+      });
+  }
+}
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: 'admin', component: AdminComponent, canActivate: [ AuthGuard ] },
+  ]
+```
+** Note: ** You can use `canActivateChild` in rout path for control child components
+
+There is feature to deactivation routing for a component:
+```javascript
+// Define a guard:
+export interface CanComponentDeactivate {
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+}
+export class DeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+  canDeactivate(
+    component: CanComponentDeactivate,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return component.canDeactivate();
+  }
+}
+
+// Implement rules of deactivation in a component:
+export class RegisterComponent implements OnInit, CanComponentDeactivate {
+  canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
+  	// Rules
+  }
+}
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: 'register', component: RegisterComponent , canDeactivate: [ DeactivateGuard ] },
+  ]
+```
