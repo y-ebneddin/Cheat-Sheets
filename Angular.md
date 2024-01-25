@@ -610,7 +610,9 @@ export class ColorfulDirective {
 <! -- Use from directive -->
 <input type="text" appColorFul>
 ```
+
 **Note:** You can use an input property for your directive as default:
+
 ```javascript
 @Input('DirectiveSelectorName') propertyName : type;
 // In the following the above code as an example: 
@@ -620,7 +622,9 @@ export class ColorfulDirective {
 <! -- Use from directive -->
 <input type="text" [appColorFul]='Red'>
 ```
+
 This code interpret to:
+
 ```html
 <! -- Use from directive -->
 <input type="text" appColorFul [defaultColor]='Red'>
@@ -632,6 +636,7 @@ Access a TemplateRef instance by placing a directive on an <ng-template> element
 - ViewContainerRef: Represents a container where one or more views can be attached to a component.
 
 Context:
+
 ```javascript
 export interface ICarouselContext {
     $implicit: string,
@@ -641,7 +646,9 @@ export interface ICarouselContext {
     }
 }
 ```
+
 Directive:
+
 ```javascript
 import { Directive, Input, TemplateRef, OnInit, ViewContainerRef } from '@angular/core';
 import { ICarouselContext } from './interfaces/app-interface';
@@ -734,3 +741,248 @@ Declare as one of the following:
 - [attribute=value]: Select by attribute name and value.
 - :not(sub_selector): Select only if the element does not match the sub_selector.
 - selector1, selector2: Select if either selector1 or selector2 matches.
+
+## Dependency injection
+
+### Providing dependency
+There are multi place to define a provider
+1.  In the component
+Define a service for a component
+```javascript
+@Component({
+	  standalone: true,
+	  selector: 'hero-list',
+	  template: '...',
+	  providers: [HeroService]
+})
+class HeroListComponent {}
+```
+2.  In the appmodule
+Define a global service 
+```javascript
+@NgModule({
+	  providers: [
+			HeroService
+	  ]
+})
+export class AppModule {}
+```
+
+### Declare injectable class
+```javascript
+@Injectable({
+  providedIn: 'root'
+})
+class HeroService {}
+```
+
+The following options specify that this injectable should be provided in one of the following injectors:
+- 'root' : The application-level injector in most apps.
+- 'platform' : A special singleton platform injector shared by all applications on the page.
+- 'any' : Provides a unique instance in each lazy loaded module while all eagerly loaded modules share one instance. This option is DEPRECATED.
+
+### Injecting a dependency
+```javascript
+@Component({ … })
+class HeroListComponent {
+	  constructor(private service: HeroService) {}
+}
+```
+
+[![Dependency injection](https://angular.io/generated/images/guide/architecture/injector-injects.png "Dependency injection")](https://angular.io/guide/dependency-injection "Dependency injection")
+
+**Note:** You can define a global variable in the provider:
+```javascript
+// Define in appModule:
+@NgModule({
+	  providers: [
+			HeroService,
+			{ provide: 'App_URL', useValue: 'www.github.com'}
+	  ]
+})
+export class AppModule {}
+
+// Use in the components:
+@Component({ … })
+class HeroListComponent {
+	  constructor(private service: HeroService, @Inject("App_URL") url:string) {}
+}
+```
+
+## Create a custom provider:
+```javascript
+// Define a provider
+export const DEVICE_NAME_TOKEN = new InjectionToken<string>('DEVICE_NAME_TOKEN');
+export function deviceNameProvider(userAgent: string, screenWidth: string, screenHeight: string): string {
+  // Logics goes here
+  return userAgent + ' ' + screenWidth + ' ' + screenHeight;
+}
+
+// Add to app module
+@NgModule({
+	  providers: [
+			{
+				provide: DEVICE_NAME_TOKEN, 
+				useFactory: deviceNameProvider,
+				deps: [
+					// dependencies
+				]
+			}
+	  ]
+})
+export class AppModule {}
+```
+```javascript
+// Use in the components:
+@Component({ … })
+class HeroListComponent {
+	  constructor(@Inject(DEVICE_NAME_TOKEN) deviceName:string) {}
+}
+```
+
+### Some usable decorators:
+#### Optional
+Parameter decorator to be used on constructor parameters, which marks the parameter as being an optional dependency. The DI framework provides null if the dependency is not found.
+#### Self
+Parameter decorator to be used on constructor parameters, which tells the DI framework to start dependency resolution from the local injector.
+#### SkipSelf
+Parameter decorator to be used on constructor parameters, which tells the DI framework to start dependency resolution from the parent injector. Resolution works upward through the injector hierarchy, so the local injector is not checked for a provider.
+
+
+```javascript
+@Component({ … })
+class HeroListComponent {
+	  constructor(@Self() private service: HeroService) {}
+}
+```
+
+# Routing
+Create the routing module:
+```shell
+ng new routingDynamics
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: '', component: HomeComponent },					// Default page
+  { path: 'users', component: UsersComponent },			// Page
+  { path: 'users/:id', component: UsersComponent },		// Page with query parameters like '.../users/john'
+  { path: 'customers/:id', component: CustomersComponent, children:[
+  		 { path: 'edit', component: EditCustomerComponent}		// Page with sub page. Path: '.../customer/john/edit'
+  ] },
+  { path: 'notFound', component: NotFoundComponent },		// Not found page
+  { path: 'notFound', component: NotFoundComponent },		// Not found page
+  { path: '**', redirectTo: 'notFound' }		// Every route is defined except for routes (In the end line)
+];
+@NgModule({
+  imports: [
+    RouterModule.forRoot(routes)
+  ]
+})
+export class AppModule { }
+```
+```html
+<!-- root component like app.component.html -->
+<ul class="nav nav-tabs">
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/']" routerLinkActive="active" [routerLinkActiveOptions]="{exact: true}">Home</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/users']" routerLinkActive="active">Users</a>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" [routerLink]="['/admins']" routerLinkActive="active">Admins</a>
+  </li>
+</ul>
+
+<router-outlet></router-outlet>
+<!-- router-outlet: Acts as a placeholder that Angular dynamically fills based on the current router state. -->
+```
+Redirect from code:
+```javascript
+@Component({ … })
+class HomeComponent {
+	  constructor(private router:Router) {
+	  		this.router.navigate(['/users']);
+	  }
+}
+```
+```html
+<a [routerLink]=['/users']>Users</a>
+<a [routerLink]=['/users','0']>Select user 0</a>	<!-- Route the page with query string (param:0) -->
+<a [routerLink]=['/users','0'] [queryParams]={edit:'1'} [fragment]="'title'">Select user 0</a>	<!-- Route to ...'users/0?edit=1#title -->
+```
+Read query parameters from routing:
+```javascript
+@Component({ … })
+class HomeComponent {
+	  constructor(private route:ActivatedRoute) {
+	  		this.route.snapshot.params['id'];
+	  }
+}
+```
+** Note: ** We have to define `<router-outlet></router-outlet>` in parent child pages like edit customer page in above example. Also we can get query parameters from parent: `this.route.parent.snapshot.params['id'];`
+
+# Authentication
+
+Create the authentication service and guard:
+```shell
+ng g s auth
+
+ng g g auth
+```
+```javascript
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
+  canActivate(
+    next: ActivatedRouteSnapshot,
+    state: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return this.authService.isAuthenticated()
+      .then((authenticated: boolean) => {
+        if (authenticated) {
+          return true;
+        } else {
+          this.router.navigate(['/notAuthorized']);
+          // return false;
+        }
+      });
+  }
+}
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: 'admin', component: AdminComponent, canActivate: [ AuthGuard ] },
+  ]
+```
+** Note: ** You can use `canActivateChild` in rout path for control child components
+
+There is feature to deactivation routing for a component:
+```javascript
+// Define a guard:
+export interface CanComponentDeactivate {
+  canDeactivate: () => Observable<boolean> | Promise<boolean> | boolean;
+}
+export class DeactivateGuard implements CanDeactivate<CanComponentDeactivate> {
+  canDeactivate(
+    component: CanComponentDeactivate,
+    currentRoute: ActivatedRouteSnapshot,
+    currentState: RouterStateSnapshot,
+    nextState?: RouterStateSnapshot): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+    return component.canDeactivate();
+  }
+}
+
+// Implement rules of deactivation in a component:
+export class RegisterComponent implements OnInit, CanComponentDeactivate {
+  canDeactivate(): boolean | Observable<boolean> | Promise<boolean> {
+  	// Rules
+  }
+}
+```
+```javascript
+// app.module.ts
+const routes: Routes = [
+  { path: 'register', component: RegisterComponent , canDeactivate: [ DeactivateGuard ] },
+  ]
+```
