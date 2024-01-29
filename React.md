@@ -23,7 +23,8 @@ arr2 = arr.map(function(v,i){
 });
 ```
 
-## React without JSX
+## Simple React
+####  React without JSX
 ```html
 <body>
 	<div id="root"></div>
@@ -38,3 +39,30 @@ arr2 = arr.map(function(v,i){
 	</script>
 </body>
 ```
+####  React with JSX
+```javascript
+import React from 'react'
+import ReactDOM from 'react-dom'
+function App() {
+  return 'Hello'
+}
+ReactDOM.render(<App />, document.getElementById('root'))
+```
+
+** Notes: **
+- Each function is a component
+- Each function have to return one HTML tag.
+- For returning multi elements we use <> ... <\> tags as container.
+- We use { } expretion to binding a variable
+
+## History
+- JavaScript: Function base
+- Module System: CommonJS | AMD | EQMAScript (ES6)
+- Module bundle: RequireJS | SystemJS | RollupJS
+- JavaScript Task Runner: Grunt | Gulp (Pipeline)
+- Application Bundler: Webpack (Like assemble) | Parcel (Zero config) | Vite 
+
+
+[The JavaScript Modules Handbook – Complete Guide to ES Modules and Module Bundlers](https://www.freecodecamp.org/news/javascript-es-modules-and-module-bundlers/#common-types-of-module-systems-in-javascript "The JavaScript Modules Handbook – Complete Guide to ES Modules and Module Bundlers")
+
+## First project
